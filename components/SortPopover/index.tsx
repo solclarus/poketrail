@@ -38,7 +38,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 
 import { toast } from "@/hooks/use-toast";
-import { ArrowUpDown, X } from "lucide-react";
+import { ArrowUpDown } from "lucide-react";
 import { SortSchema } from "./schema";
 import { orderOptions, sortOptions } from "./data";
 import { useMediaQuery } from "@/hooks/use-media-query";
@@ -93,9 +93,7 @@ export const SortPopover = () => {
           name="sortBy"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-sm font-semibold">
-                ソート項目
-              </FormLabel>
+              <FormLabel className="text-sm font-semibold">項目</FormLabel>
               <Select onValueChange={field.onChange} defaultValue={field.value}>
                 <FormControl>
                   <SelectTrigger>
@@ -151,7 +149,7 @@ export const SortPopover = () => {
           )}
         />
         <Button type="submit" className="w-full">
-          ソート適用
+          適用
         </Button>
       </form>
     </Form>
@@ -167,7 +165,7 @@ export const SortPopover = () => {
         </SheetTrigger>
         <SheetContent side={"bottom"}>
           <SheetHeader>
-            <SheetTitle>ソート設定</SheetTitle>
+            <SheetTitle>ソート</SheetTitle>
           </SheetHeader>
           <SortContent />
         </SheetContent>
@@ -198,18 +196,6 @@ export const SortPopover = () => {
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-80">
-        <div className="flex items-center justify-between mb-4">
-          <h4 className="font-medium leading-none">ソート設定</h4>
-          <Button
-            variant="ghost"
-            size="sm"
-            className="h-8 w-8 p-0"
-            onClick={() => setIsOpen(false)}
-          >
-            <span className="sr-only">閉じる</span>
-            <X className="h-4 w-4" />
-          </Button>
-        </div>
         <SortContent />
       </PopoverContent>
     </Popover>

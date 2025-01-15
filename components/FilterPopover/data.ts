@@ -1,4 +1,4 @@
-type Region = {value:string, label: string};
+export type Region = {value:string, label: string};
 type Form = {value:string, label: string};
 
 export const regions: Region[] = [

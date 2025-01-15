@@ -3,15 +3,21 @@
 import { useState, useEffect } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+import { ControllerRenderProps, useForm } from "react-hook-form";
 import { z } from "zod";
 
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
+import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -24,9 +30,10 @@ import {
 } from "@/components/ui/popover";
 import { Separator } from "@/components/ui/separator";
 import { toast } from "@/hooks/use-toast";
-import { FilterIcon, X } from "lucide-react";
+import { Filter } from "lucide-react";
 import { FilterSchema } from "./schema";
-import { forms, regions } from "./data";
+import { forms, Region, regions } from "./data";
+import { useMediaQuery } from "@/hooks/use-media-query";
 
 export const FilterPopover = () => {
   const pathname = usePathname();
@@ -35,6 +42,7 @@ export const FilterPopover = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedRegions, setSelectedRegions] = useState<string[]>([]);
   const [selectedForms, setSelectedForms] = useState<string[]>([]);
+  const isMobile = useMediaQuery("(max-width: 640px)");
 
   const form = useForm<z.infer<typeof FilterSchema>>({
     resolver: zodResolver(FilterSchema),
@@ -82,11 +90,159 @@ export const FilterPopover = () => {
     });
   }
 
+  const FilterContent = () => {
+    const handleSelectAll = (
+      field: ControllerRenderProps<
+        {
+          regions: string[];
+          forms: string[];
+        },
+        "regions"
+      >,
+      items: Region[]
+    ) => {
+      field.onChange(items.map((item) => item.value));
+    };
+
+    const handleClearAll = (
+      field: ControllerRenderProps<
+        {
+          regions: string[];
+          forms: string[];
+        },
+        "regions"
+      >
+    ) => {
+      field.onChange([]);
+    };
+
+    return (
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          <FormField
+            control={form.control}
+            name="regions"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-sm font-semibold">地方</FormLabel>
+                <div className="grid grid-cols-2 gap-2 mt-2">
+                  {regions.map((item) => (
+                    <FormItem
+                      key={item.value}
+                      className="flex items-center space-x-2"
+                    >
+                      <FormControl>
+                        <Checkbox
+                          checked={field.value?.includes(item.value)}
+                          onCheckedChange={(checked) => {
+                            return checked
+                              ? field.onChange([...field.value, item.value])
+                              : field.onChange(
+                                  field.value?.filter(
+                                    (value) => value !== item.value
+                                  )
+                                );
+                          }}
+                        />
+                      </FormControl>
+                      <FormLabel className="text-sm font-normal">
+                        {item.label}
+                      </FormLabel>
+                    </FormItem>
+                  ))}
+                </div>
+                <div className="flex gap-1 mt-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="w-full"
+                    onClick={() => handleClearAll(field)}
+                  >
+                    クリア
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="default"
+                    className="w-full"
+                    onClick={() => handleSelectAll(field, regions)}
+                  >
+                    全選択
+                  </Button>
+                </div>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <Separator />
+          <FormField
+            control={form.control}
+            name="forms"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-sm font-semibold">
+                  フォルム
+                </FormLabel>
+                <div className="flex flex-col gap-2 mt-2">
+                  {forms.map((item) => (
+                    <FormItem
+                      key={item.value}
+                      className="flex items-center space-x-2"
+                    >
+                      <FormControl>
+                        <Checkbox
+                          checked={field.value?.includes(item.value)}
+                          onCheckedChange={(checked) => {
+                            return checked
+                              ? field.onChange([...field.value, item.value])
+                              : field.onChange(
+                                  field.value?.filter(
+                                    (value) => value !== item.value
+                                  )
+                                );
+                          }}
+                        />
+                      </FormControl>
+                      <FormLabel className="text-sm font-normal">
+                        {item.label}
+                      </FormLabel>
+                    </FormItem>
+                  ))}
+                </div>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <Button type="submit" className="w-full">
+            適用
+          </Button>
+        </form>
+      </Form>
+    );
+  };
+
+  if (isMobile) {
+    return (
+      <Sheet open={isOpen} onOpenChange={setIsOpen}>
+        <SheetTrigger asChild>
+          <Button variant="outline" size={"icon"}>
+            <Filter className="h-4 w-4" />
+          </Button>
+        </SheetTrigger>
+        <SheetContent side={"bottom"}>
+          <SheetHeader>
+            <SheetTitle>フィルター</SheetTitle>
+          </SheetHeader>
+          <FilterContent />
+        </SheetContent>
+      </Sheet>
+    );
+  }
+
   return (
     <Popover open={isOpen} onOpenChange={setIsOpen}>
       <PopoverTrigger asChild>
         <Button variant="outline" className="justify-start">
-          <FilterIcon className="md:mr-2 h-4 w-4" />
+          <Filter className="md:mr-2 h-4 w-4" />
           <span className="hidden md:block">
             フィルター
             {(selectedRegions.length > 0 || selectedForms.length > 0) && (
@@ -98,109 +254,7 @@ export const FilterPopover = () => {
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-80">
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <div className="flex items-center justify-between">
-              <h4 className="font-medium leading-none">フィルター設定</h4>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="h-8 w-8 p-0"
-                onClick={() => setIsOpen(false)}
-              >
-                <span className="sr-only">閉じる</span>
-                <X className="h-4 w-4" />
-              </Button>
-            </div>
-            <Separator />
-            <FormField
-              control={form.control}
-              name="regions"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-sm font-semibold">
-                    地域フィルター
-                  </FormLabel>
-                  <FormDescription className="text-xs">
-                    表示したい地域を選択してください。
-                  </FormDescription>
-                  <div className="grid grid-cols-2 gap-2 mt-2">
-                    {regions.map((item) => (
-                      <FormItem
-                        key={item.value}
-                        className="flex items-center space-x-2"
-                      >
-                        <FormControl>
-                          <Checkbox
-                            checked={field.value?.includes(item.value)}
-                            onCheckedChange={(checked) => {
-                              return checked
-                                ? field.onChange([...field.value, item.value])
-                                : field.onChange(
-                                    field.value?.filter(
-                                      (value) => value !== item.value
-                                    )
-                                  );
-                            }}
-                          />
-                        </FormControl>
-                        <FormLabel className="text-sm font-normal">
-                          {item.label}
-                        </FormLabel>
-                      </FormItem>
-                    ))}
-                  </div>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <Separator />
-            <FormField
-              control={form.control}
-              name="forms"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-sm font-semibold">
-                    形態フィルター
-                  </FormLabel>
-                  <FormDescription className="text-xs">
-                    表示したい形態を選択してください。
-                  </FormDescription>
-                  <div className="flex flex-col gap-2 mt-2">
-                    {forms.map((item) => (
-                      <FormItem
-                        key={item.value}
-                        className="flex items-center space-x-2"
-                      >
-                        <FormControl>
-                          <Checkbox
-                            checked={field.value?.includes(item.value)}
-                            onCheckedChange={(checked) => {
-                              return checked
-                                ? field.onChange([...field.value, item.value])
-                                : field.onChange(
-                                    field.value?.filter(
-                                      (value) => value !== item.value
-                                    )
-                                  );
-                            }}
-                          />
-                        </FormControl>
-                        <FormLabel className="text-sm font-normal">
-                          {item.label}
-                        </FormLabel>
-                      </FormItem>
-                    ))}
-                  </div>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <Button type="submit" className="w-full">
-              フィルター適用
-            </Button>
-          </form>
-        </Form>
+        <FilterContent />
       </PopoverContent>
     </Popover>
   );
