@@ -1,5 +1,5 @@
 export type Region = {value:string, label: string};
-type Form = {value:string, label: string};
+export type Shape = {value:string, label: string};
 
 export const regions: Region[] = [
     { value: "kanto", label: "カントー" },
@@ -15,7 +15,7 @@ export const regions: Region[] = [
     { value: "unknown", label: "未確認" },
   ];
   
- export const forms: Form[] = [
+ export const shapes: Shape[] = [
     { value: "default", label: "通常" },
     { value: "mega", label: "メガシンカ" },
     { value: "gmax", label: "キョダイマックス" },

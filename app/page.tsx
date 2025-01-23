@@ -1,8 +1,7 @@
-import { GridCard } from "@/components/GridCard";
 import { getPokemons } from "./data/pokemon";
-import { Pokemon } from "@/types/db";
-import { FilterPopover } from "@/components/FilterPopover";
-import { SortPopover } from "@/components/SortPopover";
+import { FilterMenu } from "@/components/FilterMenu";
+import { SortMenu } from "@/components/SortMenu";
+import { PokemonGridList } from "@/components/PokemonGridList";
 
 type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>;
 
@@ -13,16 +12,14 @@ export default async function HomePage(props: { searchParams: SearchParams }) {
   if (!pokemons) return <div>no content</div>;
 
   return (
-    <main className="px-4 mt-10">
-      <div className="my-4 flex gap-1">
-        <FilterPopover />
-        <SortPopover />
-      </div>
-      <div className="grid-list">
-        {pokemons.map((pokemon: Pokemon) => {
-          return <GridCard key={pokemon.id} pokemon={pokemon} />;
-        })}
-      </div>
-    </main>
+    <div className="px-4 mt-10 flex flex-col md:flex-row gap-2">
+      <aside className="w-60 flex md:flex-col gap-1">
+        <SortMenu />
+        <FilterMenu />
+      </aside>
+      <main className="flex-1">
+        <PokemonGridList pokemons={pokemons} />
+      </main>
+    </div>
   );
 }
