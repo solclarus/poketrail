@@ -21,9 +21,9 @@ export const getPokemon= cache(async (id: string) => {
 type SearchParams = {
   implementedDate?: string;
   regions?: string;
-  forms?: string;
+  shapes?: string;
   isDefault?: boolean;
-  sortBy?: string;
+  sort?: string;
   order?: "asc" | "desc";
 }
 
@@ -39,17 +39,17 @@ export const getPokemons = cache(async (params: SearchParams = {}) => {
     query = query.in("region", regions);
   }
   
-  if(params.forms) {
-    const forms = params.forms.split(",").map((r) => r.trim());
-    query = query.in("form", forms);
+  if(params.shapes) {
+    const shapes = params.shapes.split(",").map((r) => r.trim());
+    query = query.in("form", shapes);
   }
 
   if(params.isDefault) {
     query = query.eq("is_default", params.isDefault);
   }
 
-if(params.sortBy){
-  query = query.order(params.sortBy, {ascending: params.order === "asc"});
+if(params.sort){
+  query = query.order(params.sort, {ascending: params.order === "asc"});
 }
 
   const { data, error } = await query.order("id", { ascending: true});

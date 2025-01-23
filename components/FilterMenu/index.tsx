@@ -23,47 +23,63 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+
 import { Separator } from "@/components/ui/separator";
 import { toast } from "@/hooks/use-toast";
 import { Filter } from "lucide-react";
 import { FilterSchema } from "./schema";
-import { forms, Region, regions } from "./data";
+import { shapes, regions } from "./option";
 import { useMediaQuery } from "@/hooks/use-media-query";
 
-export const FilterPopover = () => {
+type FormFields = {
+  regions: string[];
+  shapes: string[];
+};
+
+export const FilterMenu = () => {
   const pathname = usePathname();
   const router = useRouter();
   const searchParams = useSearchParams();
   const [isOpen, setIsOpen] = useState(false);
-  const [selectedRegions, setSelectedRegions] = useState<string[]>([]);
-  const [selectedForms, setSelectedForms] = useState<string[]>([]);
+  const [, setSelectedRegions] = useState<string[]>([]);
+  const [, setSelectedShapes] = useState<string[]>([]);
   const isMobile = useMediaQuery("(max-width: 640px)");
 
   const form = useForm<z.infer<typeof FilterSchema>>({
     resolver: zodResolver(FilterSchema),
     defaultValues: {
       regions: [],
-      forms: [],
+      shapes: [],
     },
   });
 
   useEffect(() => {
     const regionsParam = searchParams.get("regions");
-    const formsParam = searchParams.get("forms");
+    const shapesParam = searchParams.get("shapes");
     if (regionsParam) {
       const parsedRegions = regionsParam.split(",");
       setSelectedRegions(parsedRegions);
       form.setValue("regions", parsedRegions);
     }
-    if (formsParam) {
-      const parsedForms = formsParam.split(",");
-      setSelectedForms(parsedForms);
-      form.setValue("forms", parsedForms);
+    if (shapesParam) {
+      const parsedShapes = shapesParam.split(",");
+      setSelectedShapes(parsedShapes);
+      form.setValue("shapes", parsedShapes);
+    }
+  }, [searchParams, form]);
+
+  useEffect(() => {
+    const regionsParam = searchParams.get("regions");
+    const shapesParam = searchParams.get("shapes");
+    if (regionsParam) {
+      const parsedRegions = regionsParam.split(",");
+      setSelectedRegions(parsedRegions);
+      form.setValue("regions", parsedRegions);
+    }
+    if (shapesParam) {
+      const parsedShapes = shapesParam.split(",");
+      setSelectedShapes(parsedShapes);
+      form.setValue("shapes", parsedShapes);
     }
   }, [searchParams, form]);
 
@@ -76,10 +92,10 @@ export const FilterPopover = () => {
       params.delete("regions");
     }
 
-    if (data.forms.length > 0) {
-      params.set("forms", data.forms.join(","));
+    if (data.shapes.length > 0) {
+      params.set("shapes", data.shapes.join(","));
     } else {
-      params.delete("forms");
+      params.delete("shapes");
     }
 
     router.push(`${pathname}?${params.toString()}`);
@@ -92,26 +108,14 @@ export const FilterPopover = () => {
 
   const FilterContent = () => {
     const handleSelectAll = (
-      field: ControllerRenderProps<
-        {
-          regions: string[];
-          forms: string[];
-        },
-        "regions"
-      >,
-      items: Region[]
+      field: ControllerRenderProps<FormFields, keyof FormFields>,
+      items: { value: string }[]
     ) => {
       field.onChange(items.map((item) => item.value));
     };
 
     const handleClearAll = (
-      field: ControllerRenderProps<
-        {
-          regions: string[];
-          forms: string[];
-        },
-        "regions"
-      >
+      field: ControllerRenderProps<FormFields, keyof FormFields>
     ) => {
       field.onChange([]);
     };
@@ -176,14 +180,14 @@ export const FilterPopover = () => {
           <Separator />
           <FormField
             control={form.control}
-            name="forms"
+            name="shapes"
             render={({ field }) => (
               <FormItem>
                 <FormLabel className="text-sm font-semibold">
                   フォルム
                 </FormLabel>
                 <div className="flex flex-col gap-2 mt-2">
-                  {forms.map((item) => (
+                  {shapes.map((item) => (
                     <FormItem
                       key={item.value}
                       className="flex items-center space-x-2"
@@ -208,6 +212,24 @@ export const FilterPopover = () => {
                     </FormItem>
                   ))}
                 </div>
+                <div className="flex gap-1 mt-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="w-full"
+                    onClick={() => handleClearAll(field)}
+                  >
+                    クリア
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="default"
+                    className="w-full"
+                    onClick={() => handleSelectAll(field, shapes)}
+                  >
+                    全選択
+                  </Button>
+                </div>
                 <FormMessage />
               </FormItem>
             )}
@@ -220,42 +242,23 @@ export const FilterPopover = () => {
     );
   };
 
-  if (isMobile) {
-    return (
-      <Sheet open={isOpen} onOpenChange={setIsOpen}>
-        <SheetTrigger asChild>
-          <Button variant="outline" size={"icon"}>
-            <Filter className="h-4 w-4" />
-          </Button>
-        </SheetTrigger>
-        <SheetContent side={"bottom"}>
-          <SheetHeader>
-            <SheetTitle>フィルター</SheetTitle>
-          </SheetHeader>
-          <FilterContent />
-        </SheetContent>
-      </Sheet>
-    );
-  }
-
-  return (
-    <Popover open={isOpen} onOpenChange={setIsOpen}>
-      <PopoverTrigger asChild>
-        <Button variant="outline" className="justify-start">
-          <Filter className="md:mr-2 h-4 w-4" />
-          <span className="hidden md:block">
-            フィルター
-            {(selectedRegions.length > 0 || selectedForms.length > 0) && (
-              <span className="ml-2 inline-flex size-4 items-center justify-center rounded-full text-xs text-primary-foreground bg-primary">
-                {selectedRegions.length + selectedForms.length}
-              </span>
-            )}
-          </span>
+  return isMobile ? (
+    <Sheet open={isOpen} onOpenChange={setIsOpen}>
+      <SheetTrigger asChild>
+        <Button variant="outline" size={"icon"}>
+          <Filter className="h-4 w-4" />
         </Button>
-      </PopoverTrigger>
-      <PopoverContent className="w-80">
+      </SheetTrigger>
+      <SheetContent side={"bottom"}>
+        <SheetHeader>
+          <SheetTitle>フィルター</SheetTitle>
+        </SheetHeader>
         <FilterContent />
-      </PopoverContent>
-    </Popover>
+      </SheetContent>
+    </Sheet>
+  ) : (
+    <div className="border rounded-md backdrop-blur-sm p-3">
+      <FilterContent />
+    </div>
   );
 };

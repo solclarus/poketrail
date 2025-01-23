@@ -1,12 +1,11 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-import { Button } from "@/components/ui/button";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import {
   Sheet,
@@ -23,11 +22,8 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+import { Button } from "@/components/ui/button";
+
 import {
   Select,
   SelectContent,
@@ -40,11 +36,12 @@ import { Separator } from "@/components/ui/separator";
 import { toast } from "@/hooks/use-toast";
 import { ArrowUpDown } from "lucide-react";
 import { SortSchema } from "./schema";
-import { orderOptions, sortOptions } from "./data";
+import { orderOptions, sortOptions } from "./option";
 import { useMediaQuery } from "@/hooks/use-media-query";
 
-export const SortPopover = () => {
+export const SortMenu = () => {
   const router = useRouter();
+  const pathname = usePathname();
   const searchParams = useSearchParams();
   const [isOpen, setIsOpen] = useState(false);
   const isMobile = useMediaQuery("(max-width: 640px)");
@@ -52,45 +49,45 @@ export const SortPopover = () => {
   const form = useForm<z.infer<typeof SortSchema>>({
     resolver: zodResolver(SortSchema),
     defaultValues: {
-      sortBy: "index",
+      sort: "index",
       order: "asc",
     },
   });
 
   useEffect(() => {
-    const sortBy = searchParams.get("sortBy");
+    const sort = searchParams.get("sort");
     const order = searchParams.get("order");
-    if (sortBy) {
-      form.setValue("sortBy", sortBy);
+    if (
+      sort &&
+      (sort === "index" || sort === "name" || sort === "implemented_date")
+    ) {
+      form.setValue("sort", sort);
     }
     if (order && (order === "asc" || order === "desc")) {
       form.setValue("order", order);
     }
   }, [searchParams, form]);
 
-  function onSubmit(data: z.infer<typeof SortSchema>) {
+  const onSubmit = (data: z.infer<typeof SortSchema>) => {
     const params = new URLSearchParams(searchParams);
 
-    params.set("sortBy", data.sortBy);
+    params.set("sort", data.sort);
     params.set("order", data.order);
 
-    router.push(`/?${params.toString()}`);
+    router.push(`${pathname}?${params.toString()}`);
     setIsOpen(false);
 
     toast({
-      title: "ソート設定を適用しました",
+      title: "ソートしました",
     });
-  }
-
-  const currentSort = form.watch("sortBy");
-  const currentOrder = form.watch("order");
+  };
 
   const SortContent = () => (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
         <FormField
           control={form.control}
-          name="sortBy"
+          name="sort"
           render={({ field }) => (
             <FormItem>
               <FormLabel className="text-sm font-semibold">項目</FormLabel>
@@ -155,49 +152,23 @@ export const SortPopover = () => {
     </Form>
   );
 
-  if (isMobile) {
-    return (
-      <Sheet open={isOpen} onOpenChange={setIsOpen}>
-        <SheetTrigger asChild>
-          <Button variant="outline" size={"icon"}>
-            <ArrowUpDown className="h-4 w-4" />
-          </Button>
-        </SheetTrigger>
-        <SheetContent side={"bottom"}>
-          <SheetHeader>
-            <SheetTitle>ソート</SheetTitle>
-          </SheetHeader>
-          <SortContent />
-        </SheetContent>
-      </Sheet>
-    );
-  }
-
-  return (
-    <Popover open={isOpen} onOpenChange={setIsOpen}>
-      <PopoverTrigger asChild>
-        <Button variant="outline" className="w-[200px] justify-start">
-          <ArrowUpDown className="mr-2 h-4 w-4" />
-          ソート
-          {currentSort && currentOrder && (
-            <span className="ml-auto text-xs opacity-50">
-              {
-                sortOptions.find((option) => option.value === currentSort)
-                  ?.label
-              }
-              (
-              {
-                orderOptions.find((option) => option.value === currentOrder)
-                  ?.label
-              }
-              )
-            </span>
-          )}
+  return isMobile ? (
+    <Sheet open={isOpen} onOpenChange={setIsOpen}>
+      <SheetTrigger asChild>
+        <Button variant="outline" size={"icon"}>
+          <ArrowUpDown className="h-4 w-4" />
         </Button>
-      </PopoverTrigger>
-      <PopoverContent className="w-80">
+      </SheetTrigger>
+      <SheetContent side={"bottom"}>
+        <SheetHeader>
+          <SheetTitle>ソート</SheetTitle>
+        </SheetHeader>
         <SortContent />
-      </PopoverContent>
-    </Popover>
+      </SheetContent>
+    </Sheet>
+  ) : (
+    <div className="border rounded-md backdrop-blur-sm p-3">
+      <SortContent />
+    </div>
   );
 };
