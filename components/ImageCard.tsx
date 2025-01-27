@@ -44,7 +44,7 @@ export const ImageCard = ({
   return (
     <div
       className={
-        "aspect-square border rounded-md grid place-items-center p-4 backdrop-blur-sm"
+        "aspect-square grid place-items-center p-4"
       }
     >
       {imageUrl ? (

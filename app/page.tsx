@@ -13,7 +13,7 @@ export default async function HomePage(props: { searchParams: SearchParams }) {
 
   return (
     <div className="px-4 mt-10 flex flex-col md:flex-row gap-2">
-      <aside className="w-60 flex md:flex-col gap-1">
+      <aside className="md:w-64 lg:w-80 flex md:flex-col gap-3 px-3">
         <SortMenu />
         <FilterMenu />
       </aside>
