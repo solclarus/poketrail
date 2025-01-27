@@ -1,7 +1,6 @@
-export type Region = {value:string, label: string};
-export type Shape = {value:string, label: string};
+import type { Option } from "@/types";
 
-export const regions: Region[] = [
+export const regions: Option[] = [
     { value: "kanto", label: "カントー" },
     { value: "johto", label: "ジョウト" },
     { value: "hoenn", label: "ホウエン" },
@@ -15,8 +14,13 @@ export const regions: Region[] = [
     { value: "unknown", label: "未確認" },
   ];
   
- export const shapes: Shape[] = [
+ export const shapes: Option[] = [
     { value: "default", label: "通常" },
     { value: "mega", label: "メガシンカ" },
     { value: "gmax", label: "キョダイマックス" },
+  ];
+
+ export const isImplementeds: Option[] = [
+    { value: "true", label: "実装済" },
+    { value: "false", label: "未実装" },
   ];
