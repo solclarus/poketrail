@@ -18,7 +18,7 @@ export default async function HistoryPage(props: {
       <aside className="w-60 flex md:flex-col gap-1">
         <FilterMenu />
       </aside>
-      <main>
+      <main className="flex-1">
         <Tabs defaultValue="default" className="w-full">
           <TabsList>
             <TabsTrigger value="default">通常色</TabsTrigger>

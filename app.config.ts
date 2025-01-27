@@ -1,4 +1,4 @@
 export const  AppConfig = {
-    title: "Pokétrail",
+    title: "Poketrail",
     name: "solclarus"
 }
