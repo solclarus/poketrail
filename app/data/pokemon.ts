@@ -22,7 +22,8 @@ type SearchParams = {
   implementedDate?: string;
   regions?: string;
   shapes?: string;
-  isDefault?: boolean;
+  isImplementeds?: string;
+  isDefault?: string;
   sort?: string;
   order?: "asc" | "desc";
 }
@@ -42,6 +43,18 @@ export const getPokemons = cache(async (params: SearchParams = {}) => {
   if(params.shapes) {
     const shapes = params.shapes.split(",").map((r) => r.trim());
     query = query.in("form", shapes);
+  }
+  
+  // 実装済か否か
+  if(params.isImplementeds === "true" || params.isImplementeds === "false") {
+    const isImplemented = params.isImplementeds === "true";
+    query = isImplemented ? query.not('implemented_date', 'is', null) : query.is("implemented_date", null);
+  }
+
+  // デフォルトか否か
+  if(params.isDefault === "true" || params.isDefault === "false") {
+    const isDefault = params.isDefault === "true";
+    query = isDefault ? query.eq('is_default', true) : query.eq("is_default", false);
   }
 
   if(params.isDefault) {
