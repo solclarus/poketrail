@@ -1,4 +1,5 @@
 export * from "./useFilter"
 export * from "./useMediaQuery"
+export * from "./usePokemonImage"
 export * from "./useSort"
 export * from "./useToast"

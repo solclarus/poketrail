@@ -9,6 +9,9 @@ const nextConfig: NextConfig = {
  
     return config;
   },
+  images: {
+    domains: ['raw.githubusercontent.com',"pokeapi.co",],
+  },
 };
 
 export default nextConfig;
