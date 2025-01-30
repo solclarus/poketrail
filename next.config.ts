@@ -9,9 +9,13 @@ const nextConfig: NextConfig = {
  
     return config;
   },
-  images: {
-    domains: ['raw.githubusercontent.com',"pokeapi.co",],
-  },
+  images: { remotePatterns: [{
+    protocol: 'https',
+    hostname: 'raw.githubusercontent.com',
+  }, {
+    protocol: 'https',
+    hostname: 'pokeapi.co',
+  },]}
 };
 
 export default nextConfig;
