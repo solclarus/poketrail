@@ -1,8 +1,8 @@
 "use client";
 
-import { Pokemon } from "@/types/db";
+import { usePokemonImage } from "@/hooks";
+import type { Pokemon } from "@/types/db";
 import Image from "next/image";
-import { useEffect, useState } from "react";
 
 export const ImageCard = ({
   pokemon,
@@ -11,42 +11,10 @@ export const ImageCard = ({
   pokemon: Pokemon;
   isShiny?: boolean;
 }) => {
-  const [imageUrl, setImageUrl] = useState<string | null>(null);
-
-  useEffect(() => {
-    const fetchImage = async () => {
-      try {
-        if (pokemon.asset_id) {
-          setImageUrl(
-            `https://raw.githubusercontent.com/PokeMiners/pogo_assets/master/Images/Pokemon%20-%20256x256/Addressable%20Assets/${
-              pokemon.asset_id
-            }${isShiny ? ".s" : ""}.icon.png`
-          );
-        } else {
-          const POKEAPI_URL = "https://pokeapi.co/api/v2/pokemon-form/";
-          const response = await fetch(`${POKEAPI_URL}${pokemon.id}`);
-          const data = await response.json();
-          setImageUrl(
-            isShiny
-              ? data.sprites.front_shiny
-              : data.sprites.front_default || null
-          );
-        }
-      } catch (error) {
-        console.error("Failed to fetch image:", error);
-        setImageUrl(null);
-      }
-    };
-
-    fetchImage();
-  }, [pokemon, isShiny]);
+  const imageUrl = usePokemonImage(pokemon, isShiny);
 
   return (
-    <div
-      className={
-        "aspect-square grid place-items-center p-4"
-      }
-    >
+    <div className={"aspect-square grid place-items-center p-4"}>
       {imageUrl ? (
         <div className="relative w-full h-full">
           <Image

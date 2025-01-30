@@ -2,7 +2,7 @@ import "server-only";
 
 import { createClient } from "@/lib/supabase/server";
 import { cache } from "react";
-import { Pokemon } from "@/types/db";
+import type { Pokemon } from "@/types/db";
 
 export const getPokemon= cache(async (id: string) => {
   const supabase = await createClient();
@@ -65,7 +65,7 @@ if(params.sort){
   query = query.order(params.sort, {ascending: params.order === "asc"});
 }
 
-  const { data, error } = await query.order("id", { ascending: true});
+  const { data, error } = await query.order("index", { ascending: true}).order("id", { ascending: true});
 
   if (error) console.error(error);
 

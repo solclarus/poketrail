@@ -15,7 +15,9 @@ export default async function DetailPage({
 
   return (
     <div className="mx-auto mt-10 max-w-sm md:max-w-md">
-      <ImageCard pokemon={pokemon} />
+      <div className="w-full">
+        <ImageCard pokemon={pokemon} />
+      </div>
       <div className="items-center justify-center w-full mt-4">
         <h2 className="text-xl font-bold text-center">{pokemon.name}</h2>
       </div>
