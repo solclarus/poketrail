@@ -1,4 +1,5 @@
-import { useFormContext } from "react-hook-form";
+"use client";
+
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -7,45 +8,19 @@ import {
   FormItem,
   FormLabel,
 } from "@/components/ui/form";
-import type { Option } from "@/types";
-import { FilterFormData } from "@/schemas";
+import type { SortOption } from "@/components/SortMenu/option";
+import { FilterFormData } from "./schema";
+import { useFilterMenu } from "@/components/FilterMenu";
 
 type FilterFormProps = {
   name: keyof FilterFormData;
-  items: Option[];
+  items: SortOption[];
   isMobile: boolean;
   onSubmit: (data: FilterFormData) => void;
 };
 
-export const FilterForm = ({
-  name,
-  items,
-  isMobile,
-  onSubmit,
-}: FilterFormProps) => {
-  const form = useFormContext<FilterFormData>();
-
-  const handleSelectAll = () => {
-    form.setValue(
-      name,
-      items.map((item) => item.value)
-    );
-    if (!isMobile) form.handleSubmit(onSubmit)();
-  };
-
-  const handleClearAll = () => {
-    form.setValue(name, []);
-    if (!isMobile) form.handleSubmit(onSubmit)();
-  };
-
-  const handleChange = (value: string) => {
-    const currentValues = form.getValues(name);
-    const newValues = currentValues.includes(value)
-      ? currentValues.filter((v) => v !== value)
-      : [...currentValues, value];
-    form.setValue(name, newValues);
-    if (!isMobile) form.handleSubmit(onSubmit)();
-  };
+export const FilterForm = ({ name, items }: FilterFormProps) => {
+  const { form, selectOptions, toggleOption } = useFilterMenu();
 
   return (
     <FormField
@@ -62,7 +37,7 @@ export const FilterForm = ({
                 <FormControl>
                   <Checkbox
                     checked={field.value?.includes(item.value)}
-                    onCheckedChange={() => handleChange(item.value)}
+                    onCheckedChange={() => toggleOption(name, item.value)}
                   />
                 </FormControl>
                 <FormLabel className="text-sm font-normal">
@@ -76,7 +51,7 @@ export const FilterForm = ({
               type="button"
               variant="outline"
               className="w-full"
-              onClick={handleClearAll}
+              onClick={() => selectOptions(name)}
             >
               クリア
             </Button>
@@ -84,7 +59,7 @@ export const FilterForm = ({
               type="button"
               variant="default"
               className="w-full"
-              onClick={handleSelectAll}
+              onClick={() => selectOptions(name, items)}
             >
               全選択
             </Button>
