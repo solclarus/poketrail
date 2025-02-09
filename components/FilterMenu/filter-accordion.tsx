@@ -9,19 +9,10 @@ import {
 import {
   FilterForm,
   filterOptions,
-  FilterFormData,
   useFilterMenu,
 } from "@/components/FilterMenu";
 
-type FilterAccordionProps = {
-  isMobile: boolean;
-  onSubmit: (data: FilterFormData) => void;
-};
-
-export const FilterAccordion = ({
-  isMobile,
-  onSubmit,
-}: FilterAccordionProps) => {
+export const FilterAccordion = () => {
   const { openAccordions, handleAccordion } = useFilterMenu();
 
   return (
@@ -33,12 +24,7 @@ export const FilterAccordion = ({
               {option.label}
             </AccordionTrigger>
             <AccordionContent>
-              <FilterForm
-                name={option.value}
-                items={option.items}
-                isMobile={isMobile}
-                onSubmit={onSubmit}
-              />
+              <FilterForm name={option.value} items={option.items} />
             </AccordionContent>
           </AccordionItem>
         );

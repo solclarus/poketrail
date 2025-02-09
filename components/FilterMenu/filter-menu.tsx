@@ -29,7 +29,7 @@ export const FilterMenu = () => {
         </SheetHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <FilterAccordion isMobile={isMobile} onSubmit={onSubmit} />
+            <FilterAccordion />
             <Button type="submit" className="w-full">
               適用
             </Button>
@@ -40,7 +40,7 @@ export const FilterMenu = () => {
   ) : (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-        <FilterAccordion isMobile={isMobile} onSubmit={onSubmit} />
+        <FilterAccordion />
       </form>
     </Form>
   );

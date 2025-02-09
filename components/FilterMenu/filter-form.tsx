@@ -15,8 +15,6 @@ import { useFilterMenu } from "@/components/FilterMenu";
 type FilterFormProps = {
   name: keyof FilterFormData;
   items: SortOption[];
-  isMobile: boolean;
-  onSubmit: (data: FilterFormData) => void;
 };
 
 export const FilterForm = ({ name, items }: FilterFormProps) => {
