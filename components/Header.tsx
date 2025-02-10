@@ -3,6 +3,7 @@ import { DrawerMenu } from "./DrawerMenu";
 import { ThemeButton } from "./ThemeButton";
 import { Button } from "@/components/ui/button";
 import { AppConfig } from "@/app.config";
+import { ClerkUser } from "./clerk-user";
 
 export const Header = () => {
   return (
@@ -10,12 +11,13 @@ export const Header = () => {
       <Button variant={"ghost"} className="text-xl font-bold" asChild>
         <Link href={"/"}>{AppConfig.title}</Link>
       </Button>
-      <div className="flex">
+      <div className="flex gap-1">
         <div className="hidden md:flex">
           <Button variant={"link"} asChild>
             <Link href={"/history"}>HISTORY</Link>
           </Button>
         </div>
+        <ClerkUser />
         <ThemeButton />
         <div className="md:hidden">
           <DrawerMenu />
