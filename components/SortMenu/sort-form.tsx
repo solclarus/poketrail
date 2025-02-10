@@ -1,4 +1,5 @@
-import { useFormContext } from "react-hook-form";
+"use client";
+
 import {
   FormField,
   FormItem,
@@ -14,22 +15,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { sorts, orders } from "./SortOption";
-import { SortFormData } from "@/schemas";
+import { sorts, orders } from "./option";
+import { useSortMenu } from "./useSortMenu";
+import { SortFormData } from "./schema";
 
-type SortFormProps = {
-  isMobile: boolean;
-  onSubmit: (data: SortFormData) => void;
-};
-
-export const SortForm = ({ isMobile, onSubmit }: SortFormProps) => {
-  const form = useFormContext<SortFormData>();
-
-  const handleChange = () => {
-    if (!isMobile) {
-      form.handleSubmit(onSubmit)();
-    }
-  };
+export const SortForm = () => {
+  const { form, updateSort } = useSortMenu();
 
   return (
     <>
@@ -40,10 +31,11 @@ export const SortForm = ({ isMobile, onSubmit }: SortFormProps) => {
           <FormItem>
             <Select
               onValueChange={(value) => {
-                field.onChange(value);
-                handleChange();
+                const sort = value as SortFormData["sort"];
+                field.onChange(sort);
+                updateSort(sort, form.getValues("order"));
               }}
-              value={field.value}
+              defaultValue={field.value}
             >
               <FormControl>
                 <SelectTrigger>
@@ -74,10 +66,11 @@ export const SortForm = ({ isMobile, onSubmit }: SortFormProps) => {
             <FormControl>
               <RadioGroup
                 onValueChange={(value) => {
-                  field.onChange(value);
-                  handleChange();
+                  const order = value as SortFormData["order"];
+                  field.onChange(order);
+                  updateSort(form.getValues("sort"), order);
                 }}
-                value={field.value}
+                defaultValue={field.value}
                 className="flex space-x-4"
               >
                 {orders.map((option) => (
