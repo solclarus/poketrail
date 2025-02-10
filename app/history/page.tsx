@@ -1,7 +1,7 @@
 import { getPokemons } from "@/app/data/pokemon";
 import { GroupedSection } from "./test";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { FilterMenu } from "@/components/FilterMenu";
+import { FilterMenu } from "@/components/ControlMenu";
 
 type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>;
 
