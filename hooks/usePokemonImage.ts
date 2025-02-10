@@ -1,4 +1,4 @@
-import type { Pokemon } from "@/types";
+import type { Pokemon } from "@/types/db";
 import { useEffect, useState } from "react";
 
 const POKEAPI_URL = "https://pokeapi.co/api/v2/pokemon-form/";

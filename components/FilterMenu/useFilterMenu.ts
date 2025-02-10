@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm, type UseFormReturn } from "react-hook-form";
+import { useForm, type UseFormSetValue } from "react-hook-form";
 import { toast, useMediaQuery } from "@/hooks";
 import {
   type FilterFormData,
@@ -18,18 +18,18 @@ import {
 import { FilterOption } from "@/components/FilterMenu/option";
 
 // URL の searchParams をフォームの値に同期するカスタムフック
-const useParamValues = (
+const useFilterValues = (
   searchParams: URLSearchParams,
-  form: UseFormReturn<FilterFormData>
+  setValue: UseFormSetValue<FilterFormData>
 ) => {
   useEffect(() => {
     const getParamValues = (key: keyof FilterFormData) =>
       searchParams.get(key)?.split(",") || [];
 
-    form.setValue("regions", getParamValues("regions"));
-    form.setValue("shapes", getParamValues("shapes"));
-    form.setValue("isImplemented", getParamValues("isImplemented"));
-  }, [searchParams, form]);
+    setValue("regions", getParamValues("regions"));
+    setValue("shapes", getParamValues("shapes"));
+    setValue("isImplemented", getParamValues("isImplemented"));
+  }, [searchParams, setValue]);
 };
 
 // フィルターメニューのロジックを管理するカスタムフック
@@ -44,14 +44,14 @@ export const useFilterMenu = () => {
   const form = useForm<FilterFormData>({
     resolver: zodResolver(FilterSchema),
     defaultValues: {
-      regions: regions.map((option) => option.value),
-      shapes: shapes.map((option) => option.value),
-      isImplemented: isImplemented.map((option) => option.value),
+      regions: regions.map((o) => o.value),
+      shapes: shapes.map((o) => o.value),
+      isImplemented: isImplemented.map((o) => o.value),
     },
   });
 
   // searchParams の変化に応じてフォームの値を同期
-  useParamValues(searchParams, form);
+  useFilterValues(searchParams, form.setValue);
 
   // フォーム送信時の処理
   const onSubmit = useCallback(
@@ -103,7 +103,7 @@ export const useFilterMenu = () => {
   // オプションを全選択
   const selectOptions = useCallback(
     (name: keyof FilterFormData, options?: FilterOption[]) => {
-      updateFilter(name, options ? options.map((option) => option.value) : []);
+      updateFilter(name, options ? options.map((o) => o.value) : []);
     },
     [updateFilter]
   );
