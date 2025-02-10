@@ -1,31 +1,32 @@
 "use client";
 
 import {
-  FormField,
-  FormItem,
-  FormLabel,
-  FormControl,
-  FormMessage,
-} from "@/components/ui/form";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { sorts, orders } from "./option";
-import { useSortMenu } from "./useSortMenu";
-import { SortFormData } from "./schema";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import {
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+} from "@/components/ui/form";
+import { sortOptions, SortFormData } from "@/components/ControlMenu";
+import { Control } from "react-hook-form";
 
-export const SortForm = () => {
-  const { form, updateSort } = useSortMenu();
+type SortFormProps = {
+  handleChange: (data: Partial<SortFormData>) => void;
+  control: Control<SortFormData>;
+};
 
+export const SortForm = ({ handleChange, control }: SortFormProps) => {
   return (
     <>
       <FormField
-        control={form.control}
+        control={control}
         name="sort"
         render={({ field }) => (
           <FormItem>
@@ -33,33 +34,28 @@ export const SortForm = () => {
               onValueChange={(value) => {
                 const sort = value as SortFormData["sort"];
                 field.onChange(sort);
-                updateSort(sort, form.getValues("order"));
+                handleChange({ sort });
               }}
-              defaultValue={field.value}
+              value={field.value}
             >
               <FormControl>
                 <SelectTrigger>
-                  <SelectValue placeholder="Please select" />
+                  <SelectValue />
                 </SelectTrigger>
               </FormControl>
               <SelectContent>
-                {sorts.map((option) => (
-                  <SelectItem
-                    key={option.value}
-                    value={option.value}
-                    className="flex items-center space-x-3 space-y-0"
-                  >
+                {sortOptions.sort.items.map((option) => (
+                  <SelectItem key={option.value} value={option.value}>
                     {option.label}
                   </SelectItem>
                 ))}
               </SelectContent>
             </Select>
-            <FormMessage />
           </FormItem>
         )}
       />
       <FormField
-        control={form.control}
+        control={control}
         name="order"
         render={({ field }) => (
           <FormItem>
@@ -68,12 +64,12 @@ export const SortForm = () => {
                 onValueChange={(value) => {
                   const order = value as SortFormData["order"];
                   field.onChange(order);
-                  updateSort(form.getValues("sort"), order);
+                  handleChange({ order });
                 }}
-                defaultValue={field.value}
+                value={field.value}
                 className="flex space-x-4"
               >
-                {orders.map((option) => (
+                {sortOptions.order.items.map((option) => (
                   <FormItem
                     key={option.value}
                     className="flex items-center space-x-2 space-y-0"
@@ -88,7 +84,6 @@ export const SortForm = () => {
                 ))}
               </RadioGroup>
             </FormControl>
-            <FormMessage />
           </FormItem>
         )}
       />

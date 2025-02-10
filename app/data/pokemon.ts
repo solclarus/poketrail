@@ -43,6 +43,10 @@ type SearchParams = {
   isDefault?: string;
   sort?: string;
   order?: "asc" | "desc";
+  indexMin?: string;
+  indexMax?: string;
+  implementedDateStart?: string;
+  implementedDateEnd?: string;
 };
 
 export const getPokemons = cache(async (params: SearchParams = {}) => {
@@ -78,6 +82,22 @@ export const getPokemons = cache(async (params: SearchParams = {}) => {
 
   if (params.isDefault) {
     query = query.eq("is_default", params.isDefault);
+  }
+
+  if (params.indexMin) {
+    query = query.gte('index', parseInt(params.indexMin));
+  }
+  if (params.indexMax) {
+    query = query.lte('index', parseInt(params.indexMax));
+  }
+
+  // 実装日の範囲指定
+  if (params.implementedDateStart) {
+    query = query.gte('implemented_date', params.implementedDateStart);
+  }
+  if (params.implementedDateEnd) {
+    // 終了日は23:59:59まで含める
+    query = query.lte('implemented_date', `${params.implementedDateEnd}T23:59:59`);
   }
 
   if (params.sort) {

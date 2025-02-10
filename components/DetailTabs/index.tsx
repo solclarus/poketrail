@@ -41,11 +41,11 @@ export const DetailTabs = async ({ pokemon }: DetailTabsProps) => {
         <div>
           <p className="text-muted-foreground">
             {pokemon.implemented_date &&
-              format(pokemon.implemented_date, "yyyy年M月d日")}
+              format(new Date(pokemon.implemented_date), "yyyy年M月d日")}
           </p>
           <p className="text-muted-foreground">
             {pokemon.shiny_implemented_date &&
-              format(pokemon.shiny_implemented_date, "yyyy年M月d日")}
+              format(new Date(pokemon.shiny_implemented_date), "yyyy年M月d日")}
           </p>
         </div>
       </TabsContent>
