@@ -15,7 +15,7 @@ export default async function HistoryPage(props: {
 
   return (
     <div className="px-4 mt-10 flex flex-col md:flex-row gap-2">
-      <aside className="w-60 flex md:flex-col gap-1">
+      <aside className="w-60 flex md:flex-col gap-1 md:mr-4">
         <FilterMenu />
       </aside>
       <main className="flex-1">
